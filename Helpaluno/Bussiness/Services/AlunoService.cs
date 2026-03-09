@@ -8,116 +8,100 @@ namespace Helpaluno.Bussiness.Services
     public class AlunoService : IAlunoService
     {
         private readonly IAlunoRepository _alunoRepository;
-        public AlunoService(IAlunoRepository alunoRepository) {
+        public AlunoService(IAlunoRepository alunoRepository)
+        {
             _alunoRepository = alunoRepository;
         }
 
         public void CadastrarAluno(AlunoDto aluno)
         {
-            throw new NotImplementedException();
+            Aluno Aluno = ConverterDtoAluno(aluno);
+            _alunoRepository.Criar(Aluno);
         }
 
-        public void EditarDadosAluno(int id, AlunoDto aluno)
+        public void EditarDadosAluno(Guid id, AlunoDto aluno)
         {
-            throw new NotImplementedException();
-        }
+            ValidarId(id);
+            Aluno AlunoExistente = _alunoRepository.EncontrarAlunoPorId(id);
+            ValidarAlunoExistente(AlunoExistente);
 
-        public void EditarDataNascimento(int id, DateTime dataNasc)
+            Aluno AlunoEditado = ConverterDtoAluno(aluno);
+            
+            _alunoRepository.Editar(AlunoExistente, AlunoEditado);
+        }
+        public void EditarDataNascimento(Guid id, DateTime dataNasc)
         {
-            try
-            {
-                ValidarId(id);
-                ValidarData(dataNasc);
 
-                Aluno alunoEditado = _alunoRepository.EncontrarAlunoPorId(id);
-                alunoEditado.DataNascimento = dataNasc;
-                _alunoRepository.Editar(id, alunoEditado);
+            ValidarId(id);
+            ValidarData(dataNasc);
 
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
+            Aluno AlunoExistente = _alunoRepository.EncontrarAlunoPorId(id);
+            ValidarAlunoExistente(AlunoExistente);
+            Aluno AlunoEditado = AlunoExistente;
+            AlunoEditado.DataNascimento = dataNasc;
+            _alunoRepository.Editar(AlunoExistente, AlunoEditado);
         }
 
-        public void EditarNome(int id, string primeiroNome)
+        public void EditarNome(Guid id, string primeiroNome)
         {
-            try
-            {
-                ValidarId(id);
-                ValidarStringNulo(primeiroNome, "Primeiro Nome");
-                if (primeiroNome.Length > 50)
-                {
-                    throw new Exception("O primeiro nome não pode possuir mais do que 50 caracteres");
-                }
+            ValidarId(id);
+            ValidarStringNulo(primeiroNome, "Primeiro Nome");
+            ValidarTamanhoTexto(primeiroNome);
 
-                Aluno alunoEditado = _alunoRepository.EncontrarAlunoPorId(id);
-                alunoEditado.PrimeiroNome= primeiroNome;
-                _alunoRepository.Editar(id, alunoEditado);
+            Aluno AlunoExistente = _alunoRepository.EncontrarAlunoPorId(id);
+            ValidarAlunoExistente(AlunoExistente);
+            Aluno AlunoEditado = AlunoExistente;
+            AlunoEditado.PrimeiroNome= primeiroNome;
+            _alunoRepository.Editar(AlunoExistente, AlunoEditado);
 
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
+
         }
 
-        public void EditarSobrenome(int id, string? sobrenome)
+        public void EditarSobrenome(Guid id, string? sobrenome)
         {
-            try
-            {
-                ValidarId(id);
-                if (sobrenome?.Length > 50)
-                {
-                    throw new Exception("O sobrenome não pode possuir mais do que 50 caracteres");
-                    
-                }
-                Aluno alunoEditado = _alunoRepository.EncontrarAlunoPorId(id);
-                alunoEditado.Sobrenome = sobrenome;
-                _alunoRepository.Editar(id, alunoEditado);
 
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
+            ValidarId(id);
+            ValidarTamanhoTexto(sobrenome);
+            Aluno AlunoExistente = _alunoRepository.EncontrarAlunoPorId(id);
+            ValidarAlunoExistente(AlunoExistente);
+            Aluno AlunoEditado = AlunoExistente;
+            AlunoEditado.Sobrenome= sobrenome;
+            _alunoRepository.Editar(AlunoExistente, AlunoEditado);
+
+
         }
 
-        public Aluno PegarDadosAluno(int id)
+        public Aluno PegarDadosAluno(Guid id)
         {
             try
             {
                 ValidarId(id);
                 Aluno Aluno = _alunoRepository.EncontrarAlunoPorId(id);
+                ValidarAlunoExistente(Aluno);
+
                 return Aluno;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
+            catch (Exception e) {
+                throw new Exception(e.Message, e);
             }
         }
 
         public List<Aluno> PegarTodosAlunos()
         {
-            try
-            {
-                List<Aluno> Alunos = _alunoRepository.EncontrarTodosAlunos();
-                return Alunos;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
+            List<Aluno> Alunos = _alunoRepository.EncontrarTodosAlunos();
+            return Alunos;
         }
 
-        public void RemoverAluno(int id)
+        public void RemoverAluno(Guid id)
         {
             ValidarId(id);
-            throw new NotImplementedException();
+            Aluno aluno = _alunoRepository.EncontrarAlunoPorId(id);
+            ValidarAlunoExistente(aluno);
+            _alunoRepository.Deletar(aluno);
         }
-        private void ValidarId(int id)
+        private void ValidarId(Guid id)
         {
-            if (id >= 0)
+            if (id == Guid.Empty)
             {
                 throw new Exception("Digite um id válido");
             }
@@ -129,9 +113,9 @@ namespace Helpaluno.Bussiness.Services
                 throw new Exception($"{indice} não pode ser nulo");
             }
         }
-        
+
         private void ValidarData(DateTime data)
-        {   
+        {
             DateTime DataAtual = DateTime.Now;
             DateTime DataLimite = DataAtual.AddYears(-130);
 
@@ -142,6 +126,36 @@ namespace Helpaluno.Bussiness.Services
             if (data < DataLimite)
             {
                 throw new Exception("Você não tem mais do que 130 anos, stop the cap");
+            }
+        }
+
+        private Aluno ConverterDtoAluno(AlunoDto alunoDto)
+        {
+
+            ValidarStringNulo(alunoDto.PrimeiroNome, "Primeiro Nome");
+            ValidarTamanhoTexto(alunoDto.PrimeiroNome);
+            ValidarTamanhoTexto(alunoDto.Sobrenome);
+            ValidarData(alunoDto.DataNascimento);
+            Aluno aluno = new Aluno();
+            aluno.PrimeiroNome = alunoDto.PrimeiroNome;
+            aluno.Sobrenome = alunoDto.Sobrenome;
+            aluno.Email = alunoDto.Email;
+            aluno.DataNascimento = alunoDto.DataNascimento;
+            return aluno;
+
+        }
+        private void ValidarTamanhoTexto(string texto)
+        {
+            if (texto.Length > 50)
+            {
+                throw new Exception("O texto não pode possuir mais do que 50 caracteres");
+            }
+        }
+        private void ValidarAlunoExistente(Aluno aluno)
+        {
+            if (aluno == null)
+            {
+                throw new Exception("Aluno não encontrado");
             }
         }
     }

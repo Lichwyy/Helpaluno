@@ -1,33 +1,49 @@
 ﻿using Helpaluno.Bussiness.Entities;
 using Helpaluno.Bussiness.Interfaces.IRepositories;
+using Helpaluno.Data.Contexts;
 
 namespace Helpaluno.Data.Repositories
 {
     public class AlunoRepository : IAlunoRepository
     {
+
+        private readonly AppSettingsDbContext _context;
+        public AlunoRepository(AppSettingsDbContext context)
+        { 
+            _context = context;
+        }
+
         public void Criar(Aluno aluno)
         {
-            throw new NotImplementedException();
+            _context.Alunos.Add(aluno);
+            _context.SaveChanges();
         }
 
-        public void Deletar(int id)
+        public void Deletar(Aluno aluno)
         {
-            throw new NotImplementedException();
+            _context.Alunos.Remove(aluno);
+            _context.SaveChanges();
         }
 
-        public void Editar(int id, Aluno aluno)
+        public void Editar(Aluno alunoExistente, Aluno alunoEditado)
         {
-            throw new NotImplementedException();
+            alunoExistente.PrimeiroNome = alunoEditado.PrimeiroNome;
+            alunoExistente.Sobrenome = alunoEditado.Sobrenome;
+            alunoExistente.DataNascimento = alunoEditado.DataNascimento;
+            _context.SaveChanges();
         }
 
-        public Aluno EncontrarAlunoPorId(int id)
+        public Aluno? EncontrarAlunoPorId(Guid id)
         {
-            throw new NotImplementedException();
+            Aluno? Aluno = _context.Alunos.FirstOrDefault(aluno => aluno.Id == id);
+            return Aluno;
+            
         }
 
         public List<Aluno> EncontrarTodosAlunos()
         {
-            throw new NotImplementedException();
-        }
+            List<Aluno> Alunos = _context.Alunos.ToList();
+            return Alunos;
+        }   
     }
 }

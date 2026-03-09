@@ -7,11 +7,11 @@ namespace Helpaluno.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class Student : ControllerBase
+    public class AlunoController : ControllerBase
     {
         private readonly IAlunoService _alunoService;
 
-        public Student(IAlunoService alunoService)
+        public AlunoController(IAlunoService alunoService)
         {
             _alunoService = alunoService;
         }
@@ -30,9 +30,10 @@ namespace Helpaluno.Api.Controllers
             }
         }
 
-        [HttpGet("id")]
-        public IActionResult PegarDadosAluno(int id) {
+        [HttpGet("{id}")]
+        public IActionResult PegarDadosAluno(Guid id) {
             try {
+
                 Aluno Aluno = _alunoService.PegarDadosAluno(id);
                 return Ok(Aluno);
 
@@ -56,8 +57,8 @@ namespace Helpaluno.Api.Controllers
             }
         }
 
-        [HttpDelete("id")]
-        public IActionResult RemoverAluno(int id)
+        [HttpDelete("{id}")]
+        public IActionResult RemoverAluno(Guid id)
         {
             try
             {
@@ -70,8 +71,8 @@ namespace Helpaluno.Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPut("id")]
-        public IActionResult EditarDadosAluno(int id, AlunoDto aluno)
+        [HttpPut("{id}")]
+        public IActionResult EditarDadosAluno(Guid id, AlunoDto aluno)
         {
             try
             {
@@ -84,8 +85,8 @@ namespace Helpaluno.Api.Controllers
             }
         }
 
-        [HttpPatch("nome/id")]
-        public IActionResult EditarNome(int id, string primeiroNome)
+        [HttpPatch("nome/{id}")]
+        public IActionResult EditarNome(Guid id, [FromBody] string primeiroNome)
         {
             try
             {
@@ -98,8 +99,8 @@ namespace Helpaluno.Api.Controllers
             }
         }
 
-        [HttpPatch("sobrenome/id")]
-        public IActionResult EditarSobrenome(int id, string? sobrenome)
+        [HttpPatch("sobrenome/{id}")]
+        public IActionResult EditarSobrenome(Guid id, [FromBody] string? sobrenome)
         {
             try
             {
@@ -112,8 +113,8 @@ namespace Helpaluno.Api.Controllers
             }
         }
 
-        [HttpPatch("nascimento/id")]
-        public IActionResult EditarDataNascimento(int id, DateTime dataNasc)
+        [HttpPatch("nascimento/{id}")]
+        public IActionResult EditarDataNascimento(Guid id, [FromBody] DateTime dataNasc)
         {
             try
             {

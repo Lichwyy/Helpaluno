@@ -1,7 +1,9 @@
 using Helpaluno.Bussiness.Interfaces.IRepositories;
 using Helpaluno.Bussiness.Interfaces.IServices;
 using Helpaluno.Bussiness.Services;
+using Helpaluno.Data.Contexts;
 using Helpaluno.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,12 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IAlunoService, AlunoService>();
 builder.Services.AddScoped<IAlunoRepository, AlunoRepository>();
+
+string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppSettingsDbContext>(options =>
+    options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection))
+);
+
 
 var app = builder.Build();
 
