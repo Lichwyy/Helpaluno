@@ -44,6 +44,12 @@ namespace Helpaluno.Data.Repositories
         {
             List<Aluno> Alunos = _context.Alunos.ToList();
             return Alunos;
-        }   
+        }
+
+        public List<string> EncontrarTodosEmails()
+        {
+            List<string> TodosEmails = _context.Alunos.Select(aluno => aluno.Email).ToList();
+            return TodosEmails;
+        }
     }
 }

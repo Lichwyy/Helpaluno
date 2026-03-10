@@ -13,7 +13,7 @@ namespace Helpaluno.Bussiness.Services
             _alunoRepository = alunoRepository;
         }
 
-        public void CadastrarAluno(AlunoDto aluno)
+        public void Matricular(AlunoDto aluno)
         {
             Aluno Aluno = ConverterDtoAluno(aluno);
             _alunoRepository.Criar(Aluno);
@@ -136,6 +136,8 @@ namespace Helpaluno.Bussiness.Services
             ValidarTamanhoTexto(alunoDto.PrimeiroNome);
             ValidarTamanhoTexto(alunoDto.Sobrenome);
             ValidarData(alunoDto.DataNascimento);
+            ValidarEmail(alunoDto.Email);
+
             Aluno aluno = new Aluno();
             aluno.PrimeiroNome = alunoDto.PrimeiroNome;
             aluno.Sobrenome = alunoDto.Sobrenome;
@@ -156,6 +158,23 @@ namespace Helpaluno.Bussiness.Services
             if (aluno == null)
             {
                 throw new Exception("Aluno não encontrado");
+            }
+        }
+
+        private void ValidarEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                throw new Exception("Email não pode ser nulo");
+            }
+            if (!email.Contains("@faculdade.edu"))
+            {
+                throw new Exception("O email deve ser institucional.");
+            }
+            List<string> TodosEmails = _alunoRepository.EncontrarTodosEmails();
+            if (TodosEmails.Contains(email))
+            {
+                throw new Exception("Email já cadastrado");
             }
         }
     }

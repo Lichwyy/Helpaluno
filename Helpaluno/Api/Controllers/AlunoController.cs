@@ -48,7 +48,7 @@ namespace Helpaluno.Api.Controllers
         {
             try
             {
-                _alunoService.CadastrarAluno(aluno);
+                _alunoService.Matricular(aluno);
                 return Created();
             }
             catch (Exception ex)

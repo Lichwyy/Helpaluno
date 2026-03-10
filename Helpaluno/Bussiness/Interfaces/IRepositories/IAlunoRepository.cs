@@ -9,5 +9,6 @@ namespace Helpaluno.Bussiness.Interfaces.IRepositories
         public void Editar(Aluno alunoExistente, Aluno alunoEditado);
         public void Criar(Aluno aluno);
         public void Deletar(Aluno aluno);
+        public List<string> EncontrarTodosEmails(); 
     }
 }
